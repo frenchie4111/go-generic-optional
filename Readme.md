@@ -14,6 +14,11 @@ import (
 	"github.com/frenchie4111/go-generic-optional"
 )
 
+type database interface {
+	getUser(userID string) (*User, error)
+}
+const db database
+
 func getUser(userID: string) Optional[User], error {
 	if !db.connected() {
 		return opt.Empty[User](), fmt.Errorf("Failed to getUser Not connected to DB")
@@ -24,7 +29,7 @@ func getUser(userID: string) Optional[User], error {
 		return opt.Empty[User](), fmt.Errorf("Failed to getUser: %v", err)
 	}
 
-	return opt.Make(User)
+	return opt.Make(user)
 }
 
 func main() {
