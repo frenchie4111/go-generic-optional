@@ -16,7 +16,7 @@ import (
 func main() {
 	anOptional := opt.MakeOptional[string](nil)
 
-    // Prints: "could not unwrap"
+	// Prints: "could not unwrap"
 	if unwrapped, err := anOptional.Unwrap(); err == nil {
 		fmt.Println("Unwrapped ", unwrapped)
 	} else {
@@ -26,14 +26,14 @@ func main() {
 	hi := "hi"
 	opt2 := opt.MakeOptional(&hi)
 
-    // Prints: "Unwrapped  hi"
+	// Prints: "Unwrapped  hi"
 	if unwrapped, err := opt2.Unwrap(); err == nil {
 		fmt.Println("Unwrapped ", unwrapped)
 	} else {
 		fmt.Println("Could not unwrap")
 	}
 
-    // // Prints: "Unwrapped  works"
+	// Prints: "Unwrapped  works"
 	thing := opt.If(opt2, func(ifunwrapped string) string {
 		return "works"
 	})
