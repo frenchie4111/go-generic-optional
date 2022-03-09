@@ -3,8 +3,10 @@
 This package is a tiny implementation of Optionals in go, using the new go1.18
 generics.
 
-## Example:
+Optionals are useful because sometimes errors are actually errors, and nil is a
+valid response, but you want to retain type safety.
 
+## Example:
 
 ```go
 import (
@@ -29,7 +31,8 @@ func main() {
 	user, err := getUser("user-id-1")
 
 	if err != nil {
-		panic(err)
+		// handle error cases
+		return
 	}
 
 	opt.If(user, func(user User)) {
