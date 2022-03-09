@@ -5,38 +5,35 @@ generics.
 
 ## Example:
 
-```go
-package main
 
+```go
 import (
 	"fmt"
 	"github.com/frenchie4111/go-generic-optional"
 )
 
+func getUser(userID: string) Optional[User], error {
+	if !db.connected() {
+		return opt.Empty[User](), fmt.Errorf("Failed to getUser Not connected to DB")
+	}
+
+	user, err := db.getUser()
+	if err {
+		return opt.Empty[User](), fmt.Errorf("Failed to getUser: %v", err)
+	}
+
+	return opt.Make(User)
+}
+
 func main() {
-	anOptional := opt.MakeOptional[string](nil)
+	user, err := getUser("user-id-1")
 
-	// Prints: "could not unwrap"
-	if unwrapped, err := anOptional.Unwrap(); err == nil {
-		fmt.Println("Unwrapped ", unwrapped)
-	} else {
-		fmt.Println("Could not unwrap")
+	if err != nil {
+		panic(err)
 	}
 
-	hi := "hi"
-	opt2 := opt.MakeOptional(&hi)
-
-	// Prints: "Unwrapped  hi"
-	if unwrapped, err := opt2.Unwrap(); err == nil {
-		fmt.Println("Unwrapped ", unwrapped)
-	} else {
-		fmt.Println("Could not unwrap")
+	opt.If(user, func(user User)) {
+		fmt.Println("Found user", user.firstName)
 	}
-
-	// Prints: "Unwrapped  works"
-	thing := opt.If(opt2, func(ifunwrapped string) string {
-		return "works"
-	})
-	fmt.Println("Handled ", thing.ForceUnwrap())
 }
 ```
