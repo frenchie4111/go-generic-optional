@@ -21,15 +21,15 @@ const db database
 
 func getUser(userID: string) Optional[User], error {
 	if !db.connected() {
-		return opt.Empty[User](), fmt.Errorf("Failed to getUser Not connected to DB")
+		return opt.New[User](), fmt.Errorf("Database not connected")
 	}
 
 	user, err := db.getUser()
 	if err {
-		return opt.Empty[User](), fmt.Errorf("Failed to getUser: %v", err)
+		return opt.New[User](), fmt.Errorf("Failed to getUser: %v", err)
 	}
 
-	return opt.Make(user)
+	return opt.Of(user)
 }
 
 func main() {
