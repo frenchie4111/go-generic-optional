@@ -22,6 +22,11 @@ func Of[T any](value T) Optional[T] {
 	return Optional[T]{value, true}
 }
 
+// Returns true if the optional value has been set
+func (o Optional[T]) Exists() bool {
+	return o.exists
+}
+
 // Get returns the value and whether it exists.
 // It's invalid to use the returned value if the bool is false.
 func (o Optional[T]) Get() (T, bool) {
@@ -52,31 +57,33 @@ func If[T any, R any](optional Optional[T], handler func(T) R) Optional[R] {
 	return New[R]()
 }
 
+// MarshalJSON implements the json.Marshaller interface. Optionals wil
+// marshall and unmarshall as a nullable json field. Value type must also
+// implement json.Marshaller.
 func (o Optional[Value]) MarshalJSON() ([]byte, error) {
-	return json.Marshal(
-		&struct {
-			Value  Value `json:"value"`
-			Exists bool  `json:"exists"`
-		}{
-			Value:  o.value,
-			Exists: o.exists,
-		},
-	)
+	if !o.exists {
+		return json.Marshal(nil)
+	}
+	return json.Marshal(o.value)
 }
 
+// UnmarshalJSON implements the json.Unmarshaler interface. Optionals will
+// marshall and unmarshall as a nullable json field. Value type must also
+// implement json.Unmarshaler.
 func (o *Optional[Value]) UnmarshalJSON(data []byte) error {
-	s := &struct {
-		Value  Value `json:"value"`
-		Exists bool  `json:"exists"`
-	}{}
+	var v *Value
 
-	if err := json.Unmarshal(data, &s); err != nil {
+	if err := json.Unmarshal(data, &v); err != nil {
 		return err
 	}
 
-	o.value = s.Value
-	o.exists = s.Exists
+	if v == nil {
+		o.exists = false
+		return nil
+	}
 
+	o.exists = true
+	o.value = *v
 	return nil
 }
 
